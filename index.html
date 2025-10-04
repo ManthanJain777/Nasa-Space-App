@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="description" content="ARTEMIS-RCL — Revolutionary Circular Life-Support for Mars Colonization" />
+  <title>ARTEMIS-RCL | Advanced Recycling & Transformation System</title>
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- Animated particle background -->
+  <canvas id="particles" aria-hidden="true"></canvas>
+  <!-- Inline SVG sprite: enhanced icon set -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none">
+    <symbol id="icon-mars" viewBox="0 0 64 64">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="1" y2="1">
+          <stop offset="0%" stop-color="#ff6b35"/>
+          <stop offset="100%" stop-color="#a01a1a"/>
+        </linearGradient>
+        <radialGradient id="g2" cx="0.3" cy="0.3">
+          <stop offset="0%" stop-color="#ff8855" stop-opacity="0.8"/>
+          <stop offset="100%" stop-color="transparent"/>
+        </radialGradient>
+      </defs>
+      <circle cx="32" cy="32" r="28" fill="url(#g1)"/>
+      <circle cx="22" cy="22" r="18" fill="url(#g2)"/>
+      <path d="M8 28c8-6 18-5 24-3s10 3 16 1 8-5 8-5" fill="none" stroke="#fff" stroke-opacity="0.35" stroke-width="2"/>
+      <path d="M10 40c6 2 12 4 18 4s14-2 26-10" fill="none" stroke="#fff" stroke-opacity="0.2" stroke-width="2"/>
+      <circle cx="18" cy="30" r="3" fill="#4a1a1a" opacity="0.4"/>
+      <circle cx="42" cy="25" r="4" fill="#3a1010" opacity="0.3"/>
+    </symbol>
+    <symbol id="icon-atom" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="6" fill="#06b6d4"/>
+      <ellipse cx="32" cy="32" rx="24" ry="12" fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.7"/>
+      <ellipse cx="32" cy="32" rx="12" ry="24" fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.7"/>
+      <ellipse cx="32" cy="32" rx="20" ry="8" fill="none" stroke="#22d3ee" stroke-width="1.5" opacity="0.5" transform="rotate(60 32 32)"/>
+    </symbol>
+    <symbol id="icon-can" viewBox="0 0 64 64">
+      <rect x="18" y="10" width="28" height="44" rx="4" fill="#d1d5db" stroke="#9ca3af"/>
+      <rect x="18" y="10" width="28" height="6" fill="#9ca3af"/>
+    </symbol>
+    <symbol id="icon-fabric" viewBox="0 0 64 64">
+      <path d="M10 14c10 0 14 8 22 8s12-8 22-8v36c-10 0-14 8-22 8s-12-8-22-8V14z" fill="#a78bfa"/>
+      <path d="M10 26c10 0 14 8 22 8s12-8 22-8" fill="none" stroke="#7c3aed" stroke-opacity="0.5" stroke-width="2"/>
+    </symbol>
+    <symbol id="icon-helmet" viewBox="0 0 64 64">
+      <path d="M12 38a20 20 0 1140 0v8H12v-8z" fill="#60a5fa" stroke="#2563eb"/>
+      <rect x="18" y="30" width="24" height="6" rx="3" fill="#93c5fd"/>
+    </symbol>
+    <symbol id="icon-box" viewBox="0 0 64 64">
+      <path d="M8 20l24-8 24 8v28L32 56 8 48V20z" fill="#fbbf24" stroke="#d97706"/>
+      <path d="M32 12v44" stroke="#d97706"/>
+    </symbol>
+    <symbol id="icon-gear" viewBox="0 0 64 64">
+      <circle cx="32" cy="32" r="8" fill="#0ea5e9"/>
+      <path d="M32 10l4 6h8l2 6-6 4 2 7 6 4-2 6h-8l-4 6-4-6h-8l-2-6 6-4-2-7-6-4 2-6h8z" fill="none" stroke="#0ea5e9" stroke-width="3"/>
+    </symbol>
+    <symbol id="icon-extrude" viewBox="0 0 64 64">
+      <rect x="10" y="14" width="44" height="16" rx="4" fill="#14b8a6"/>
+      <path d="M10 42h44" stroke="#14b8a6" stroke-width="8"/>
+      <circle cx="32" cy="42" r="6" fill="#0f766e"/>
+    </symbol>
+    <symbol id="icon-utensils" viewBox="0 0 64 64">
+      <rect x="18" y="12" width="6" height="40" rx="3" fill="#e5e7eb" stroke="#9ca3af"/>
+      <path d="M40 12c-4 6-4 10 0 12v28h6V24c4-2 4-6 0-12h-6z" fill="#e5e7eb" stroke="#9ca3af"/>
+    </symbol>
+    <symbol id="icon-bin" viewBox="0 0 64 64">
+      <rect x="14" y="18" width="36" height="34" rx="4" fill="#f3f4f6" stroke="#9ca3af"/>
+      <rect x="10" y="12" width="44" height="8" rx="4" fill="#9ca3af"/>
+    </symbol>
+    <symbol id="icon-wrench" viewBox="0 0 64 64">
+      <path d="M40 12a10 10 0 10-4 18L20 46l6 6 16-20a10 10 0 008-20z" fill="#94a3b8" stroke="#64748b"/>
+    </symbol>
+    <symbol id="icon-insulation" viewBox="0 0 64 64">
+      <path d="M8 40c8-10 16 10 24 0s16 10 24 0" fill="none" stroke="#34d399" stroke-width="4"/>
+    </symbol>
+    <symbol id="icon-chair" viewBox="0 0 64 64">
+      <rect x="20" y="12" width="24" height="24" rx="4" fill="#cbd5e1" stroke="#94a3b8"/>
+      <rect x="16" y="36" width="32" height="8" rx="2" fill="#cbd5e1" stroke="#94a3b8"/>
+      <path d="M18 44v8M46 44v8" stroke="#94a3b8" stroke-width="3"/>
+    </symbol>
+    <symbol id="icon-check" viewBox="0 0 24 24">
+      <path d="M20 6L9 17l-5-5" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="icon-rocket" viewBox="0 0 64 64">
+      <path d="M32 8l-8 24-4 8 8-4 24-8-20-20z" fill="#a78bfa" stroke="#7c3aed" stroke-width="2"/>
+      <circle cx="38" cy="22" r="3" fill="#5b21b6"/>
+      <path d="M16 40l-8 8 4 4 8-8z" fill="#e879f9" stroke="#c026d3"/>
+      <path d="M24 32l-8 0 2 4 4-2z" fill="#fbbf24"/>
+    </symbol>
+    <symbol id="icon-shield" viewBox="0 0 64 64">
+      <path d="M32 8l-20 8v12c0 12 8 22 20 28 12-6 20-16 20-28v-12l-20-8z" fill="#34d399" stroke="#059669" stroke-width="2"/>
+      <path d="M28 32l4 4 8-8" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="icon-lightning" viewBox="0 0 64 64">
+      <path d="M36 8l-20 28h12l-4 20 20-28h-12z" fill="#fbbf24" stroke="#f59e0b" stroke-width="2"/>
+    </symbol>
+  </svg>
+
+  <header class="site-header">
+    <div class="container">
+      <a href="#" class="logo" aria-label="ARTEMIS-RCL home">
+        <div class="logo-icon">
+          <svg aria-hidden="true" width="32" height="32"><use href="#icon-atom"/></svg>
+        </div>
+        <div class="logo-text">
+          <span class="logo-main">ARTEMIS-RCL</span>
+          <span class="logo-sub">Recycling & Circular Life-Support</span>
+        </div>
+      </a>
+      <nav class="site-nav" aria-label="Primary">
+        <a href="#stats">Mission Stats</a>
+        <a href="#technology">Technology</a>
+        <a href="#timeline">Timeline</a>
+        <a href="#simulator">Simulator</a>
+        <a href="#impact">Impact</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <!-- Hero Section -->
+    <section class="hero" aria-label="Hero">
+      <div class="container hero-inner">
+        <div class="hero-badge">🚀 ARTEMIS MISSION 2027-2030</div>
+        <h1 class="hero-title">
+          <span class="hero-title-line">Transforming Waste</span>
+          <span class="hero-title-line gradient-text">Into Resources</span>
+          <span class="hero-title-line">On Mars</span>
+        </h1>
+        <p class="hero-subtitle">Advanced Recycling & Transformation Ecosystem for Mars In-Situ Sustainability</p>
+        <div class="hero-cta-group">
+          <a class="cta primary" href="#simulator">Launch Simulator</a>
+          <a class="cta secondary" href="#technology">Explore Tech</a>
+        </div>
+        <div class="hero-planet" aria-hidden="true">
+          <div class="planet-ring"></div>
+          <div class="planet-ring ring-2"></div>
+          <svg width="280" height="280" viewBox="0 0 64 64"><use href="#icon-mars"/></svg>
+        </div>
+      </div>
+      <div class="scroll-indicator" aria-hidden="true">
+        <span>Scroll to explore</span>
+        <div class="scroll-arrow"></div>
+      </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section id="stats" class="section stats-section reveal">
+      <div class="container">
+        <div class="section-label">Mission Critical Data</div>
+        <h2 class="section-title">By The Numbers</h2>
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="40" height="40"><use href="#icon-box"/></svg></div>
+            <div class="stat-value" data-target="12600">0</div>
+            <div class="stat-unit">kg</div>
+            <div class="stat-label">Waste Processed</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="40" height="40"><use href="#icon-gear"/></svg></div>
+            <div class="stat-value" data-target="87">0</div>
+            <div class="stat-unit">%</div>
+            <div class="stat-label">Recovery Rate</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="40" height="40"><use href="#icon-rocket"/></svg></div>
+            <div class="stat-value" data-target="1095">0</div>
+            <div class="stat-unit">days</div>
+            <div class="stat-label">Mission Duration</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon"><svg width="40" height="40"><use href="#icon-utensils"/></svg></div>
+            <div class="stat-value" data-target="2400">0</div>
+            <div class="stat-unit">+</div>
+            <div class="stat-label">Items Produced</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Technology Section -->
+    <section id="technology" class="section tech-section reveal">
+      <div class="container">
+        <div class="section-label">Core Technologies</div>
+        <h2 class="section-title">Intelligent Waste Processing</h2>
+        <p class="section-intro">ARTEMIS-RCL employs AI-driven sorting, plasma reformation, and molecular reconstruction to achieve 87% material recovery.</p>
+        <div class="tech-grid">
+          <div class="tech-card">
+            <div class="tech-card-inner">
+              <div class="tech-front">
+                <div class="tech-icon"><svg width="48" height="48"><use href="#icon-gear"/></svg></div>
+                <h3>Neural Sorting</h3>
+                <p>AI-powered spectroscopy identifies material composition in real-time</p>
+              </div>
+              <div class="tech-back">
+                <h4>Specifications</h4>
+                <ul>
+                  <li>99.2% accuracy</li>
+                  <li>15 materials/second</li>
+                  <li>0.5mm resolution</li>
+                  <li>Multi-spectral imaging</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-inner">
+              <div class="tech-front">
+                <div class="tech-icon"><svg width="48" height="48"><use href="#icon-lightning"/></svg></div>
+                <h3>Plasma Reformation</h3>
+                <p>Low-temp plasma breaks complex polymers into base molecules</p>
+              </div>
+              <div class="tech-back">
+                <h4>Specifications</h4>
+                <ul>
+                  <li>180-250°C operation</li>
+                  <li>92% energy recovery</li>
+                  <li>Zero toxic emissions</li>
+                  <li>Closed-loop process</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-inner">
+              <div class="tech-front">
+                <div class="tech-icon"><svg width="48" height="48"><use href="#icon-extrude"/></svg></div>
+                <h3>Adaptive Extrusion</h3>
+                <p>Multi-material 3D printing from recycled feedstock</p>
+              </div>
+              <div class="tech-back">
+                <h4>Specifications</h4>
+                <ul>
+                  <li>8 material blends</li>
+                  <li>0.1mm precision</li>
+                  <li>Custom geometries</li>
+                  <li>Real-time quality control</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="tech-card">
+            <div class="tech-card-inner">
+              <div class="tech-front">
+                <div class="tech-icon"><svg width="48" height="48"><use href="#icon-shield"/></svg></div>
+                <h3>Safe Processing</h3>
+                <p>Contamination prevention and biofilm suppression systems</p>
+              </div>
+              <div class="tech-back">
+                <h4>Specifications</h4>
+                <ul>
+                  <li>UV-C sterilization</li>
+                  <li>HEPA filtration</li>
+                  <li>Automated cleaning</li>
+                  <li>Real-time monitoring</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Timeline Section -->
+    <section id="timeline" class="section timeline-section reveal">
+      <div class="container">
+        <div class="section-label">3-Year Mission</div>
+        <h2 class="section-title">Deployment Timeline</h2>
+        <div class="timeline">
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Year 1: 2027-2028</div>
+              <h3>System Deployment & Calibration</h3>
+              <p>ARTEMIS-RCL units arrive with Cargo Mission 3. Initial setup, crew training, and baseline waste processing begins. Focus on packaging materials and daily consumable waste streams.</p>
+              <div class="timeline-stats">
+                <span>📦 2,100 kg processed</span>
+                <span>🔧 85% recovery rate</span>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Year 2: 2028-2029</div>
+              <h3>Full-Scale Operations</h3>
+              <p>All recycling modules operational. Advanced material processing including EVA suits, habitat textiles, and electronic components. Production of structural elements for habitat expansion.</p>
+              <div class="timeline-stats">
+                <span>📦 5,400 kg processed</span>
+                <span>🔧 89% recovery rate</span>
+              </div>
+            </div>
+          </div>
+          <div class="timeline-item">
+            <div class="timeline-dot"></div>
+            <div class="timeline-content">
+              <div class="timeline-date">Year 3: 2029-2030</div>
+              <h3>Optimization & Legacy</h3>
+              <p>Peak efficiency achieved. Custom production runs for mission-specific needs. Knowledge transfer for next mission crew. System documentation and performance data archived.</p>
+              <div class="timeline-stats">
+                <span>📦 5,100 kg processed</span>
+                <span>🔧 91% recovery rate</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+
+
+
+    <!-- Interactive Simulator -->
+    <section id="simulator" class="section simulator-section reveal" aria-labelledby="sim-title">
+      <div class="container">
+        <div class="section-label">Interactive Experience</div>
+        <h2 class="section-title" id="sim-title">ARTEMIS-RCL Simulator</h2>
+        <p class="section-intro">Experience the recycling process. Drag waste materials into the processor and watch real-time transformation.</p>
+        <div class="simulator">
+          <div class="sim-panel inventory-panel" aria-label="Waste inventory">
+            <h3>Waste Inputs</h3>
+            <div class="inventory">
+              <div class="inv-item" draggable="true" data-type="aluminum" data-weight="850" aria-grabbed="false" role="button" tabindex="0">
+                <svg width="36" height="36" aria-hidden="true"><use href="#icon-can"/></svg>
+                <span class="inv-name">Aluminum</span>
+                <span class="inv-weight">850g</span>
+              </div>
+              <div class="inv-item" draggable="true" data-type="textiles" data-weight="320" aria-grabbed="false" role="button" tabindex="0">
+                <svg width="36" height="36" aria-hidden="true"><use href="#icon-fabric"/></svg>
+                <span class="inv-name">Textiles</span>
+                <span class="inv-weight">320g</span>
+              </div>
+              <div class="inv-item" draggable="true" data-type="eva" data-weight="1200" aria-grabbed="false" role="button" tabindex="0">
+                <svg width="36" height="36" aria-hidden="true"><use href="#icon-helmet"/></svg>
+                <span class="inv-name">EVA Foam</span>
+                <span class="inv-weight">1200g</span>
+              </div>
+              <div class="inv-item" draggable="true" data-type="packaging" data-weight="540" aria-grabbed="false" role="button" tabindex="0">
+                <svg width="36" height="36" aria-hidden="true"><use href="#icon-box"/></svg>
+                <span class="inv-name">Packaging</span>
+                <span class="inv-weight">540g</span>
+              </div>
+            </div>
+          </div>
+          <div class="sim-panel machine-panel">
+            <h3>Processing Unit</h3>
+            <div class="machine" aria-label="Recycling Machine" role="group">
+              <div class="machine-face">
+                <div class="machine-status">READY</div>
+                <div class="machine-visual">
+                  <div class="chamber"></div>
+                  <div class="spinner"></div>
+                </div>
+                <div class="lights" aria-hidden="true">
+                  <span class="light"></span><span class="light"></span><span class="light"></span>
+                </div>
+                <p class="drop-hint">Drop materials here</p>
+              </div>
+              <div class="machine-metrics">
+                <div class="metric">
+                  <span class="metric-label">Energy</span>
+                  <div class="metric-bar"><div class="metric-fill" data-metric="energy"></div></div>
+                  <span class="metric-value">0 kW</span>
+                </div>
+                <div class="metric">
+                  <span class="metric-label">Recovery</span>
+                  <div class="metric-bar"><div class="metric-fill" data-metric="recovery"></div></div>
+                  <span class="metric-value">0%</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="sim-panel output-panel" aria-live="polite">
+            <h3>Output Products</h3>
+            <div class="output-content">
+              <div class="batch"></div>
+              <div class="recommendations"></div>
+            </div>
+            <div class="output-stats">
+              <div class="output-stat">
+                <span class="stat-label">Total Weight</span>
+                <span class="stat-value" id="total-weight">0 g</span>
+              </div>
+              <div class="output-stat">
+                <span class="stat-label">Items Processed</span>
+                <span class="stat-value" id="items-count">0</span>
+              </div>
+            </div>
+            <div class="sim-actions">
+              <button class="btn-sim process" type="button" disabled>Process Batch</button>
+              <button class="btn-sim clear" type="button">Reset</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Impact Section -->
+    <section id="impact" class="section impact-section reveal">
+      <div class="container">
+        <div class="section-label">Mission Impact</div>
+        <h2 class="section-title">Enabling Long-Term Sustainability</h2>
+        <div class="impact-grid">
+          <div class="impact-card">
+            <div class="impact-icon">
+              <svg width="48" height="48"><use href="#icon-shield"/></svg>
+            </div>
+            <h3>Zero Waste to Landfill</h3>
+            <p>87% of all mission waste is recovered and reused. Remaining 13% consists of irreducible biological waste safely composted for regolith enrichment.</p>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">
+              <svg width="48" height="48"><use href="#icon-lightning"/></svg>
+            </div>
+            <h3>Energy Independence</h3>
+            <p>Recycling consumes 78% less energy than manufacturing from raw materials. System operates on solar power with battery backup.</p>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">
+              <svg width="48" height="48"><use href="#icon-rocket"/></svg>
+            </div>
+            <h3>Mission Extension</h3>
+            <p>Self-sufficiency in replacement parts and tools enables mission duration extension from 3 to 5+ years without resupply.</p>
+          </div>
+          <div class="impact-card">
+            <div class="impact-icon">
+              <svg width="48" height="48"><use href="#icon-atom"/></svg>
+            </div>
+            <h3>Technology Transfer</h3>
+            <p>Innovations developed for Mars recycling are now being adapted for Earth-based circular economy applications.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- FAQ Section -->
+    <section id="faq" class="section faq-section reveal">
+      <div class="container">
+        <div class="section-label">Common Questions</div>
+        <h2 class="section-title">Frequently Asked Questions</h2>
+        <div class="faq-list">
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>How does ARTEMIS-RCL differ from traditional recycling?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Unlike Earth-based recycling that often downcycles materials, ARTEMIS-RCL uses advanced plasma reformation and molecular reconstruction to maintain or improve material quality. Our AI-driven sorting achieves 99.2% accuracy, and the closed-loop system operates in Mars' low-pressure environment with minimal energy input.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>What happens to materials that can't be recycled?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>The 13% of waste that cannot be recycled consists primarily of biological waste and heavily contaminated materials. Biological waste undergoes aerobic composting and is mixed with Martian regolith to create enriched growth medium for greenhouse operations. Contaminated materials are encapsulated and stored for eventual return to Earth or future processing as technology advances.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>How much power does the system require?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>ARTEMIS-RCL operates on 12-18 kW depending on processing intensity. The system is powered by the habitat's solar array with battery backup. Peak processing occurs during high solar availability. Energy recovery from plasma reformation returns approximately 8-11 kW to the grid, making net consumption just 4-7 kW.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>Can the system handle unexpected waste types?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Yes. The neural sorting system continuously learns and can identify unknown materials through spectroscopic analysis. If a safe processing pathway cannot be determined, the material is quarantined for crew analysis. The system's modular design allows for software updates and new processing protocols to be uploaded from Earth.</p>
+            </div>
+          </div>
+          <div class="faq-item">
+            <button class="faq-question" type="button">
+              <span>What products have been successfully created?</span>
+              <span class="faq-icon">+</span>
+            </button>
+            <div class="faq-answer">
+              <p>Over 2,400 items including: structural brackets, storage containers, tool handles, insulation panels, furniture components, utensils, water filtration parts, electrical conduit, gaskets, and even decorative items for crew morale. Each item undergoes quality testing to ensure it meets mission safety standards.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="footer-logo">
+            <svg width="36" height="36"><use href="#icon-atom"/></svg>
+            <span>ARTEMIS-RCL</span>
+          </div>
+          <p>Advanced Recycling & Transformation Ecosystem for Mars In-Situ Sustainability</p>
+        </div>
+        <div class="footer-links">
+          <div class="footer-col">
+            <h4>Mission</h4>
+            <a href="#stats">Statistics</a>
+            <a href="#technology">Technology</a>
+            <a href="#timeline">Timeline</a>
+          </div>
+          <div class="footer-col">
+            <h4>Resources</h4>
+            <a href="#simulator">Simulator</a>
+            <a href="#impact">Impact</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div class="footer-col">
+            <h4>Contact</h4>
+            <a href="mailto:artemis@mars.mission">Email Team</a>
+            <a href="#">Technical Docs</a>
+            <a href="#">Press Kit</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>© <span id="year"></span> ARTEMIS-RCL Project. Mission simulation concept for educational purposes.</p>
+        <p class="footer-credits">Jezero Crater Base • Mars Colonization Initiative</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="./script.js" defer></script>
+</body>
+</html>
