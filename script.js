@@ -125,7 +125,7 @@ ready(() => {
     });
   });
 
-  // 6. ENHANCED SIMULATOR
+  // 6. ENHANCED SIMULATOR WITH 12 WASTE TYPES
   const items = Array.from(document.querySelectorAll('.inv-item'));
   const machine = document.querySelector('.machine');
   const batchEl = document.querySelector('.batch');
@@ -134,18 +134,32 @@ ready(() => {
   const processBtn = document.querySelector('.btn-sim.process');
   const totalWeightEl = document.getElementById('total-weight');
   const itemsCountEl = document.getElementById('items-count');
+  const efficiencyScoreEl = document.getElementById('efficiency-score');
   const machineStatus = document.querySelector('.machine-status');
   const energyFill = document.querySelector('[data-metric="energy"]');
   const recoveryFill = document.querySelector('[data-metric="recovery"]');
+  const efficiencyFill = document.querySelector('[data-metric="efficiency"]');
   const energyValue = document.querySelectorAll('.metric-value')[0];
   const recoveryValue = document.querySelectorAll('.metric-value')[1];
+  const efficiencyValue = document.querySelectorAll('.metric-value')[2];
 
   const iconFor = (type) => {
     const icons = {
       aluminum: '#icon-can',
       textiles: '#icon-fabric',
       eva: '#icon-helmet',
-      packaging: '#icon-box'
+      packaging: '#icon-box',
+      'plastic-film': '#icon-plastic',
+      'carbon-fiber': '#icon-composite',
+      electronics: '#icon-chip',
+      glass: '#icon-glass',
+      rubber: '#icon-rubber',
+      composite: '#icon-structure',
+      insulation: '#icon-insulation',
+      filters: '#icon-filter',
+      batteries: '#icon-battery',
+      wiring: '#icon-wire',
+      carbon: '#icon-carbon'
     };
     return icons[type] || '#icon-gear';
   };
@@ -155,28 +169,100 @@ ready(() => {
       { label: 'Metal Containers', icon: '#icon-bin' },
       { label: 'Structural Brackets', icon: '#icon-wrench' },
       { label: 'Heat Exchangers', icon: '#icon-gear' },
+      { label: 'Tool Handles', icon: '#icon-utensils' },
     ],
     textiles: [
       { label: 'Thermal Insulation', icon: '#icon-insulation' },
       { label: 'Storage Bags', icon: '#icon-bin' },
       { label: 'Decorative Fabric', icon: '#icon-fabric' },
+      { label: 'Filter Media', icon: '#icon-filter' },
     ],
     eva: [
       { label: 'Seal Gaskets', icon: '#icon-wrench' },
       { label: 'Filter Housing', icon: '#icon-bin' },
       { label: 'Ergonomic Grips', icon: '#icon-utensils' },
+      { label: 'Vibration Dampers', icon: '#icon-rubber' },
     ],
     packaging: [
       { label: 'Modular Organizers', icon: '#icon-bin' },
       { label: 'Plant Containers', icon: '#icon-chair' },
       { label: 'Wall Panels', icon: '#icon-insulation' },
+      { label: 'Storage Boxes', icon: '#icon-box' },
     ],
+    'plastic-film': [
+      { label: 'Waterproof Liners', icon: '#icon-plastic' },
+      { label: 'Protective Covers', icon: '#icon-fabric' },
+      { label: 'Sealant Strips', icon: '#icon-wrench' },
+      { label: 'Temporary Partitions', icon: '#icon-structure' },
+    ],
+    'carbon-fiber': [
+      { label: 'Structural Beams', icon: '#icon-structure' },
+      { label: 'Reinforcement Plates', icon: '#icon-composite' },
+      { label: 'Tool Fixtures', icon: '#icon-wrench' },
+      { label: 'Bracket Supports', icon: '#icon-gear' },
+    ],
+    electronics: [
+      { label: 'Circuit Boards', icon: '#icon-chip' },
+      { label: 'Sensor Housings', icon: '#icon-bin' },
+      { label: 'Connector Parts', icon: '#icon-wire' },
+      { label: 'Control Panels', icon: '#icon-gear' },
+    ],
+    glass: [
+      { label: 'Observation Windows', icon: '#icon-glass' },
+      { label: 'Light Diffusers', icon: '#icon-lightning' },
+      { label: 'Lab Equipment', icon: '#icon-gear' },
+      { label: 'Decorative Elements', icon: '#icon-utensils' },
+    ],
+    rubber: [
+      { label: 'Seal Rings', icon: '#icon-rubber' },
+      { label: 'Vibration Mounts', icon: '#icon-wrench' },
+      { label: 'Gaskets', icon: '#icon-gear' },
+      { label: 'Protective Caps', icon: '#icon-bin' },
+    ],
+    composite: [
+      { label: 'Habitat Panels', icon: '#icon-structure' },
+      { label: 'Storage Shelves', icon: '#icon-chair' },
+      { label: 'Work Surfaces', icon: '#icon-utensils' },
+      { label: 'Equipment Mounts', icon: '#icon-gear' },
+    ],
+    insulation: [
+      { label: 'Thermal Blankets', icon: '#icon-insulation' },
+      { label: 'Acoustic Panels', icon: '#icon-structure' },
+      { label: 'Pipe Wraps', icon: '#icon-wrench' },
+      { label: 'Wall Liners', icon: '#icon-fabric' },
+    ],
+    filters: [
+      { label: 'Air Purifiers', icon: '#icon-filter' },
+      { label: 'Water Filters', icon: '#icon-gear' },
+      { label: 'Vent Covers', icon: '#icon-bin' },
+      { label: 'Dust Collectors', icon: '#icon-insulation' },
+    ],
+    batteries: [
+      { label: 'Power Cells', icon: '#icon-battery' },
+      { label: 'Energy Storage', icon: '#icon-lightning' },
+      { label: 'Backup Systems', icon: '#icon-chip' },
+      { label: 'Portable Power', icon: '#icon-wire' },
+    ],
+    wiring: [
+      { label: 'Electrical Conduit', icon: '#icon-wire' },
+      { label: 'Data Cables', icon: '#icon-chip' },
+      { label: 'Connection Harnesses', icon: '#icon-gear' },
+      { label: 'Sensor Wiring', icon: '#icon-lightning' },
+    ],
+    carbon: [
+      { label: 'Reinforcement Fibers', icon: '#icon-carbon' },
+      { label: 'Filter Media', icon: '#icon-filter' },
+      { label: 'Conductive Paste', icon: '#icon-wire' },
+      { label: 'Lubricant Additive', icon: '#icon-gear' },
+    ]
   };
 
   const batch = [];
   let processing = false;
 
-  function capitalize(s) { return s.charAt(0).toUpperCase() + s.slice(1); }
+  function capitalize(s) { 
+    return s.replace(/-/g, ' ').replace(/\b\w/g, l => l.toUpperCase()); 
+  }
 
   function updateStats() {
     const totalWeight = batch.reduce((sum, item) => {
@@ -188,26 +274,34 @@ ready(() => {
     if (totalWeightEl) totalWeightEl.textContent = `${totalWeight} g`;
     if (itemsCountEl) itemsCountEl.textContent = itemsCount;
 
+    // Calculate efficiency based on material diversity
+    const uniqueTypes = new Set(batch.map(item => item.type)).size;
+    const efficiency = Math.min(95, 60 + (uniqueTypes * 3) + (itemsCount * 2));
+    
+    if (efficiencyScoreEl) efficiencyScoreEl.textContent = `${efficiency}%`;
+
     // Enable/disable process button
     if (processBtn) {
       processBtn.disabled = itemsCount === 0 || processing;
     }
 
     // Update energy and recovery metrics
-    const energyKw = Math.min(18, (totalWeight / 1000) * 4).toFixed(1);
-    const recovery = Math.min(91, 80 + (itemsCount * 2));
+    const energyKw = Math.min(18, (totalWeight / 1000) * 2.5).toFixed(1);
+    const recovery = Math.min(91, 75 + (uniqueTypes * 2) + (itemsCount * 1.5));
 
     if (energyFill) energyFill.style.width = `${(energyKw / 18) * 100}%`;
     if (recoveryFill) recoveryFill.style.width = `${recovery}%`;
+    if (efficiencyFill) efficiencyFill.style.width = `${efficiency}%`;
     if (energyValue) energyValue.textContent = `${energyKw} kW`;
     if (recoveryValue) recoveryValue.textContent = `${recovery}%`;
+    if (efficiencyValue) efficiencyValue.textContent = `${efficiency}%`;
   }
 
   function renderBatch() {
     if (!batchEl) return;
     batchEl.innerHTML = '';
     if (batch.length === 0) {
-      batchEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem;">No items in batch yet. Drag materials from the left.</p>';
+      batchEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; text-align: center;">No items in batch yet.<br>Drag materials from the inventory.</p>';
       return;
     }
     for (const item of batch) {
@@ -222,13 +316,25 @@ ready(() => {
     if (!recEl) return;
     recEl.innerHTML = '';
     if (batch.length === 0) {
-      recEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 12px;">Process materials to see output products.</p>';
+      recEl.innerHTML = '<p style="color: var(--text-muted); font-size: 0.9rem; margin-top: 12px; text-align: center;">Process materials to see output products.</p>';
       return;
     }
 
     const seen = new Set();
-    for (const item of batch) {
-      const opts = recipes[item.type] || [];
+    const materialCounts = {};
+    
+    // Count materials for weighted recommendations
+    batch.forEach(item => {
+      materialCounts[item.type] = (materialCounts[item.type] || 0) + 1;
+    });
+
+    // Sort materials by count (most abundant first)
+    const sortedMaterials = Object.entries(materialCounts)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4);
+
+    for (const [materialType] of sortedMaterials) {
+      const opts = recipes[materialType] || [];
       for (const o of opts) {
         const key = `${o.label}|${o.icon}`;
         if (seen.has(key)) continue;
@@ -237,7 +343,11 @@ ready(() => {
         entry.className = 'rec';
         entry.innerHTML = `<svg width="24" height="24" aria-hidden="true"><use href="${o.icon}"/></svg><span>${o.label}</span>`;
         recEl.appendChild(entry);
+        
+        // Limit to 8 recommendations
+        if (seen.size >= 8) break;
       }
+      if (seen.size >= 8) break;
     }
   }
 
@@ -265,8 +375,8 @@ ready(() => {
 
       setTimeout(() => {
         if (machineStatus) machineStatus.textContent = 'READY';
-      }, 1500);
-    }, 3000);
+      }, 2000);
+    }, 3500);
   }
 
   function clearBatch() {
@@ -284,8 +394,12 @@ ready(() => {
     item.addEventListener('dragstart', (e) => {
       e.dataTransfer?.setData('text/plain', item.getAttribute('data-type') || '');
       item.setAttribute('aria-grabbed', 'true');
+      item.style.opacity = '0.4';
     });
-    item.addEventListener('dragend', () => item.setAttribute('aria-grabbed', 'false'));
+    item.addEventListener('dragend', () => {
+      item.setAttribute('aria-grabbed', 'false');
+      item.style.opacity = '1';
+    });
     // Keyboard support
     item.addEventListener('keydown', (e) => {
       if (e.key === 'Enter' || e.key === ' ') {
@@ -315,6 +429,28 @@ ready(() => {
   // Buttons
   processBtn?.addEventListener('click', processBatch);
   clearBtn?.addEventListener('click', clearBatch);
+
+  // 7. NASA RESOURCE LINK TRACKING
+  document.querySelectorAll('.resource-link').forEach(link => {
+    link.addEventListener('click', (e) => {
+      // You can add analytics tracking here
+      console.log('Resource accessed:', e.target.href);
+    });
+  });
+
+  // 8. NASA BADGE ANIMATION
+  function createNASABadgeAnimation() {
+    const badges = document.querySelectorAll('.nasa-badge');
+    badges.forEach(badge => {
+      badge.addEventListener('mouseenter', () => {
+        badge.style.transform = 'scale(1.1)';
+      });
+      badge.addEventListener('mouseleave', () => {
+        badge.style.transform = 'scale(1)';
+      });
+    });
+  }
+  createNASABadgeAnimation();
 
   // Initial render
   renderBatch();
